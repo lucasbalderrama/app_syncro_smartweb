@@ -1,7 +1,25 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { supabase } from '../../services/supabase';
 
-const RealizarLogin = ({ navigation }) => {
+const Login = ({ navigation }) => {
+    const handleLogin = async () => {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+    
+        if (error) {
+            console.log('Erro ao fazer login:', error.message);
+            return;
+        }
+    
+        console.log('Usuário logado:', data.user);
+    
+        navigation.navigate("Chat");
+    };
+    
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -34,7 +52,7 @@ const RealizarLogin = ({ navigation }) => {
                 <TouchableOpacity>
                     <Text style={styles.esqueceuSenha}>Esqueceu a senha?</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={redirecionarChat}>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableOpacity>
 
@@ -64,7 +82,7 @@ const styles = StyleSheet.create({
         marginTop: 50,
     },
     input: {
-        height: 40,
+        height: 100,
         borderColor: 'gray',
         borderWidth: 1,
         backgroundColor: 'white',
@@ -113,4 +131,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default RealizarLogin;
+export default Login;
