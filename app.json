@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "app_syncro_smartweb",
+    "name": "Syncro",
     "slug": "app_syncro_smartweb",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icone-logo/icone.png",
+    "icon": "./src/assets/icone-logo/icone - syncro.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -18,7 +18,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/logo/logo.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "resizeMode": "contain"
       },
       "edgeToEdgeEnabled": true
     },
