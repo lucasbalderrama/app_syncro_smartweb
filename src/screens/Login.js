@@ -3,31 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'reac
 import { supabase } from '../../supabaseConfig';
 
 const Login = ({ navigation }) => {
-    const handleLogin = async () => {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-    
-        if (error) {
-            console.log('Erro ao fazer login:', error.message);
-            return;
-        }
-    
-        console.log('Usuário logado:', data.user);
-    
-        navigation.navigate("Chat");
-    };
-    
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
     const redirecionarCadastro = () => {
         navigation.navigate("Cadastro")
-    }
-    const redirecionarChat = () => {
-        navigation.navigate("Chat")
     }
     return (
         <View style={styles.container}>
@@ -49,9 +26,7 @@ const Login = ({ navigation }) => {
                     onChangeText={setPassword}
                     value={password}
                 />
-                <TouchableOpacity>
-                    <Text style={styles.esqueceuSenha}>Esqueceu a senha?</Text>
-                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableOpacity>
@@ -82,29 +57,28 @@ const styles = StyleSheet.create({
         marginTop: 50,
     },
     input: {
-        height: 100,
-        borderColor: 'gray',
+        height: 38,
+        borderColor: 'rgba(83, 72, 207, 0.73)',
         borderWidth: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#fff',
         marginBottom: 20,
         width: 300,
         paddingLeft: 10,
         borderRadius: 8,
     },
     button: {
-        backgroundColor: '#fff',
-        paddingVertical: 10,
-        paddingHorizontal: 40,
-        borderRadius: 5,
+        paddingVertical: 9,
+        paddingHorizontal: 28,
+        borderRadius: 7,
         marginBottom: 50,
         marginTop: 20,
-        borderColor: '#2c2dd7',
-        borderWidth: 2,
+        backgroundColor: 'rgb(83, 72, 207)',
     },
     buttonText: {
-        color: '#2c2dd7',
+        fontFamily: 'Gotham',
+        color: 'white',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: 500,
     },
     textCadastro: {
         marginTop: 30,
@@ -112,11 +86,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%',
         height: 60,
-        borderTopColor: '#c1c1c1',
-        borderTopWidth: 1,
     },
-
+    
     linkCadastro: {
+        fontFamily: 'Gotham',
         fontSize: 16,
         color: '#000',
     },
