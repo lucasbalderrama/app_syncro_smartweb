@@ -3,13 +3,7 @@ import {
     View, TextInput, Button, FlatList, Text,
     StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity
 } from 'react-native';
-// import { criarNotificacao } from '../services/notificacoesService';
-import {
-    collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc
-} from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import firebase from '../../firebaseConfig';
-import { supabase } from '../../services/supabase';
+import { supabase } from '../../supabaseConfig';
 
 export default function Chat() {
     const [message, setMessage] = useState('');

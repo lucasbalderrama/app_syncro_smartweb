@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { supabase } from '../../services/supabase';
+import { supabase } from '../../supabaseConfig';
 
 const Login = ({ navigation }) => {
     const handleLogin = async () => {
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     textCadastro: {
-        marginTop: 230,
+        marginTop: 30,
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',

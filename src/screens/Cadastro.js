@@ -1,6 +1,3 @@
-// Ana Lívia dos Santos Lopes nº1 DS
-// Isadora Gomes da Silva nº 9
-
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
@@ -9,22 +6,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 
 const CadastroUsuario = () => {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [file, setFile] = useState(null);
-
-  const pickFile = async () => {
-    Alert.alert("Função de seleção de imagem ainda não implementada.");
-  };
-
-  const handleRegister = () => {
-    if (!nome || !email || !senha) {
-      Alert.alert("Preencha todos os campos!");
-      return;
-    }
-    Alert.alert("Usuário cadastrado com sucesso!");
-  };
+  
 
   return (
     <LinearGradient
