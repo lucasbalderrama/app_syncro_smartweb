@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { supabase } from '../../supabaseConfig';
 
+
 const Login = ({ navigation }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
     const handleLogin = async () => {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
@@ -19,15 +23,8 @@ const Login = ({ navigation }) => {
         navigation.navigate("Chat");
     };
 
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
     const redirecionarCadastro = () => {
         navigation.navigate("Cadastro")
-    }
-    const redirecionarChat = () => {
-        navigation.navigate("Chat")
     }
     return (
         <View style={styles.container}>
@@ -65,6 +62,7 @@ const Login = ({ navigation }) => {
         </View>
     );
 }
+
 export default Login;
 
 const styles = StyleSheet.create({
@@ -77,16 +75,12 @@ const styles = StyleSheet.create({
         width: 300,
         height: 300,
         resizeMode: 'contain',
-        marginBottom: -50,
         marginTop: 50,
     },
     input: {
-        height: 100,
-        backgroundColor: 'white',
-        height: 38,
-        borderColor:  
-        'rgba(83, 72, 207, 0.73)',
-      borderWidth: 1,
+        height: 40,
+        borderColor:'rgba(83, 72, 207, 0.73)',
+        borderWidth: 1,
         backgroundColor: '#fff',
         marginBottom: 20,
         width: 300,
@@ -94,39 +88,27 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     button: {
-        backgroundColor: '#fff',
-        paddingVertical: 10,
-        paddingHorizontal: 40,
-        borderRadius: 5,
-        paddingVertical: 9,
-        paddingHorizontal: 28,
+        paddingVertical: 12,
+        paddingHorizontal: 25,
         borderRadius: 7,
         marginBottom: 50,
         marginTop: 20,
-        borderColor: '#2c2dd7',
-        borderWidth: 2,
         backgroundColor: 'rgb(83, 72, 207)',
     },
     buttonText: {
-        color: '#2c2dd7',
         fontFamily: 'Gotham',
         color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-        fontWeight: 500,
+        fontSize: 18,
+        fontWeight:450,
     },
     textCadastro: {
-        marginTop: 230,
         marginTop: 40,
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
         height: 60,
-        borderTopColor: '#c1c1c1',
-        borderTopWidth: 1,
     },
 
-    
     linkCadastro: {
         fontFamily: 'Gotham',
         fontSize: 16,
