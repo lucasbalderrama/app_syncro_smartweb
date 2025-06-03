@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
         width: 300,
         height: 300,
         resizeMode: 'contain',
-        marginTop: 50,
+        marginTop:700,
     },
     input: {
         height: 40,
@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     button: {
-        paddingVertical: 12,
-        paddingHorizontal: 25,
+        paddingVertical: 20,
+        paddingHorizontal: 35,
         borderRadius: 7,
         marginBottom: 50,
         marginTop: 20,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         fontWeight:450,
     },
     textCadastro: {
-        marginTop: 40,
+        marginTop: 640,
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',

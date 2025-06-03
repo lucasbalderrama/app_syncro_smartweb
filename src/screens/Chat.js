@@ -5,12 +5,13 @@ import {
 } from 'react-native';
 import { supabase } from '../../supabaseConfig';
 
+// corrigir pois esta com problema na query
+
 export default function Chat() {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [userNames, setUserNames] = useState({});
-    const auth = getAuth();
-    const user = auth.currentUser;
+
 
     useEffect(() => {
 
