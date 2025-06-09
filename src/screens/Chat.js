@@ -1,162 +1,135 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    View, TextInput, Button, FlatList, Text,
-    StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity
+    View, TextInput, FlatList, Text,
+    StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity,
+    SafeAreaView, Keyboard, TouchableWithoutFeedback
 } from 'react-native';
-import { supabase } from '../../supabaseConfig';
 
-// corrigir pois esta com problema na query
+import Mensagens from '../component/mensagens';
+import { supabase } from '../../supabaseConfig.js';
 
-export default function Chat() {
+export default function ChatScreen() {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const [userNames, setUserNames] = useState({});
 
+    const userId = '00000000-0000-0000-0000-000000000001';
+    const chatId = 1; 
 
     useEffect(() => {
-
-        const q = query(collection(db, 'messages'), orderBy('createdAt', 'asc'));
-        const unsubscribe = onSnapshot(q, async snapshot => {
-            const msgs = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-
-            const uniqueUserIds = [...new Set(msgs.map(msg => msg.userId))];
-            const namesMap = { ...userNames };;
-
-            const { data, error } = await supabase
-                .from('users')
-                .select('nome')
-                .eq('id', uid)
-                .single();
-
-            namesMap[uid] = data?.nome || '<------->';
-
-
-            setUserNames(namesMap);
-            setMessages(msgs);
-        });
-
-        return () => unsubscribe();
+        fetchMessages();
     }, []);
 
+    const fetchMessages = async () => {
+        const { data, error } = await supabase
+            .from('chat_messages')
+            .select('id, content, user_id, created_at')
+            .eq('chat_id', chatId)
+            .order('created_at', { ascending: true });
+
+        if (!error) {
+            const formatted = data.map(msg => ({
+                id: msg.id.toString(),
+                text: msg.content,
+                userId: msg.user_id
+            }));
+            setMessages(formatted);
+        } else {
+            console.error('Erro ao buscar mensagens:', error);
+        }
+    };
+
     const sendMessage = async () => {
-        if (message.trim() && user) {
-            await addDoc(collection(db, 'messages'), {
-                text: message,
-                createdAt: new Date(),
-                userEmail: user.email,
-                userId: user.uid
-            });
-            setMessage('');
-        }
-    };
+        if (message.trim()) {
+            const { data, error } = await supabase
+                .from('chat_messages')
+                .insert([
+                    {
+                        content: message,
+                        user_id: userId,
+                        chat_id: chatId
+                    }
+                ]);
 
-    const deleteMessage = async (id) => {
-        try {
-            await deleteDoc(doc(db, 'messages', id));
-        } catch (error) {
-            Swal.fire('Erro', 'Não foi possível apagar a mensagem.', 'error');
-        }
-    };
-
-    const confirmDelete = (id) => {
-        Swal.fire({
-            title: 'Apagar mensagem?',
-            text: 'Essa ação não pode ser desfeita.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sim, apagar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                deleteMessage(id);
+            if (!error) {
+                setMessage('');
+                fetchMessages(); 
+            } else {
+                console.error('Erro ao enviar:', error);
             }
-        });
+        }
     };
 
     const renderItem = ({ item }) => {
-        const isMyMessage = item.userEmail === user.email;
-        const isAna = user?.email === 'alguem@gmail.com';
-        const userName = userNames[item.userId] || item.userEmail;
-
+        const isMyMessage = item.userId === userId;
         return (
             <View style={[
-                styles.messageBubble,
+                styles.Mensagens,
                 {
                     alignSelf: isMyMessage ? 'flex-end' : 'flex-start',
                     backgroundColor: isMyMessage ? '#add8e6' : '#DCF8C6'
                 }
             ]}>
-                <Text style={styles.userName}>{userName}</Text>
                 <Text style={styles.messageText}>{item.text}</Text>
-                {isAna && (
-                    <TouchableOpacity onPress={() => confirmDelete(item.id)} style={styles.deleteButton}>
-                        <Text style={styles.deleteText}>Apagar</Text>
-                    </TouchableOpacity>
-                )}
             </View>
         );
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={80}
-        >
-            <FlatList
-                data={messages}
-                renderItem={renderItem}
-                keyExtractor={item => item.id}
-                contentContainerStyle={styles.messagesContainer}
-            />
+        <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 20}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.container}>
+                        {/* Mensagens fixas demonstrativas */}
+                        <Mensagens />
 
-            <View style={styles.inputContainer}>
-                <TextInput
-                    value={message}
-                    onChangeText={setMessage}
-                    placeholder="Digite sua mensagem"
-                    style={styles.input}
-                />
-                <TouchableOpacity onPress={sendMessage} style={styles.registerButton}>
-                    <Text style={styles.botao}>Enviar</Text>
-                </TouchableOpacity>
-            </View>
-        </KeyboardAvoidingView>
+                        {/* Mensagens do banco */}
+                        <FlatList
+                            data={messages}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
+                            contentContainerStyle={styles.messagesContainer}
+                        />
+
+                        {/* Input e botão */}
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                value={message}
+                                onChangeText={setMessage}
+                                placeholder="Digite sua mensagem"
+                                style={styles.input}
+                            />
+                            <TouchableOpacity onPress={sendMessage} style={styles.registerButton}>
+                                <Text style={styles.botao}>Enviar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    messagesContainer: { padding: 10 },
-    messageBubble: {
+    container: {
+        flex: 1,
+        marginBottom: 50,
+    },
+    messagesContainer: {
+        padding: 10,
+        flexGrow: 1,
+    },
+    Mensagens: {
         padding: 10,
         borderRadius: 8,
         marginVertical: 5,
         maxWidth: '80%',
-        position: 'relative',
     },
-    userName: {
-        fontSize: 12,
-        color: '#555',
-        marginBottom: 2,
-        fontWeight: 'bold',
-    },
-    messageText: { fontSize: 16 },
-    deleteButton: {
-        marginTop: 5,
-        backgroundColor: '#f87171',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 6,
-        alignSelf: 'flex-end',
-    },
-    deleteText: {
-        color: 'white',
-        fontSize: 12,
-        fontWeight: 'bold',
+    messageText: {
+        fontSize: 16,
     },
     inputContainer: {
         flexDirection: 'row',
@@ -173,11 +146,14 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginRight: 10,
     },
-    botao: {
+    registerButton: {
         backgroundColor: '#924DBF',
         padding: 10,
-        borderRadius: 10,
+        borderRadius: 15,
         alignItems: 'center',
-        color: "#fff"
+    },
+    botao: {
+        color: 'white',
+        fontWeight: 'bold',
     }
 });
