@@ -10,7 +10,7 @@ export default function CriarGrupo({ }) {
     useEffect(() => {
         async function fetchUsers() {
             const { data, error } = await supabase
-                .from('user')
+                .from('users') // troque 'user' por 'users'
                 .select('*');
             if (!error) setUsers(data);
         }
@@ -43,11 +43,11 @@ export default function CriarGrupo({ }) {
 
         const { data: grupo, error: grupoError } = await supabase
             .from('groups')
-            .insert([{ 
+            .insert([{
                 name: groupName,
                 created_at: new Date().toISOString(),
                 created_by: user.id
-             }])
+            }])
             .select()
             .single();
 
@@ -82,13 +82,13 @@ export default function CriarGrupo({ }) {
             <ScrollView style={styles.scrollView}>
                 {users.map((user, idx) => (
                     <TouchableOpacity
-                        key={user.user_id}
-                        onPress={() => toggleSelect(user.user_id)}
+                        key={user.id}
+                        onPress={() => toggleSelect(user.id)}
                         style={{
                             padding: 8,
                             borderBottomWidth: 1,
                             borderBottomColor: '#444',
-                            backgroundColor: selected.includes(user.user_id) ? 'rgba(91, 75, 236, 0.32)' : 'transparent',
+                            backgroundColor: selected.includes(user.id) ? 'rgba(91, 75, 236, 0.32)' : 'transparent',
                             borderTopLeftRadius: idx === 0 ? 8 : 0,
                             borderTopRightRadius: idx === 0 ? 8 : 0,
                             borderBottomLeftRadius: idx === users.length - 1 ? 8 : 0,
@@ -96,10 +96,10 @@ export default function CriarGrupo({ }) {
                         }}
                     >
                         <Text style={styles.userName}>
-                            {user.user_name}
+                            {user.name}
                         </Text>
                         <Text style={styles.userEmail}>
-                            {user.user_email}
+                            {user.email}
                         </Text>
                     </TouchableOpacity>
                 ))}
