@@ -6,6 +6,7 @@ import Perfil from '../screens/Perfil';
 import Login from '../screens/Login';
 import Cadastro from '../screens/Cadastro';
 import Chat from '../screens/Chat';
+import CriarGrupo from '../screens/CriarGrupo';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ export default function NativeStack() {
             <Stack.Screen name="Cadastro" component={Cadastro} />
             <Stack.Screen name="Chat" component={Chat} />
             <Stack.Screen name="Perfil" component={Perfil} />
+            <Stack.Screen name="CriarGrupo" component={CriarGrupo} />
         </Stack.Navigator>
     );
 }
