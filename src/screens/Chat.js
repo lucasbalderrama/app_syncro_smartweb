@@ -12,6 +12,20 @@ export default function ChatScreen() {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
+    const [user, setUser] = useState(null);
+    const [chatMembers, setChatMembers] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+            const { data: { user }, userError } = await supabase.auth.getUser();
+            if (userError) {
+                console.error('Erro ao obter usuário:', userError);
+            } else {
+                setUser(user);
+            }
+        })();
+    }, []);
+
     const userId = '00000000-0000-0000-0000-000000000001';
     const chatId = 1; 
 

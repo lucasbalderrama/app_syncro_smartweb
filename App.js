@@ -17,7 +17,7 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor="rgb(19, 19, 24)" />
       <NavigationContainer>
         <Drawer.Navigator 
-        initialRouteName="Chat" 
+        initialRouteName="Login" 
         screenOptions={{
           drawerContentStyle: { backgroundColor: 'rgb(30,30,36)' },
           drawerInactiveTintColor: '#aaa',
