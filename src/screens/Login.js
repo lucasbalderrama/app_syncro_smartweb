@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { supabase } from '../../supabaseConfig';
 
 
@@ -15,9 +15,10 @@ const Login = ({ navigation }) => {
 
         if (error) {
             console.log('Erro ao fazer login:', error.message);
+            Alert.alert('Erro ao fazer login: ' + error.message);
             return;
         }
-
+        Alert.alert('Login bem-sucedido!', 'Bem-vindo de volta, ' + data.user.email);
         console.log('Usuário logado:', data.user);
 
         navigation.navigate("Chat");
@@ -35,7 +36,7 @@ const Login = ({ navigation }) => {
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="E-mail"
+                    placeholder="Email"
                     onChangeText={setEmail}
                     value={email}
                 />
@@ -48,7 +49,7 @@ const Login = ({ navigation }) => {
                 />
 
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>Entrar</Text>
+                  <Text style={styles.textoBotao}>Entrar</Text>
                 </TouchableOpacity>
 
             </View>
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
         width: 300,
         height: 300,
         resizeMode: 'contain',
-        marginTop:700,
+        marginTop:500,
     },
     input: {
         height: 40,
@@ -88,18 +89,20 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     button: {
-        paddingVertical: 20,
-        paddingHorizontal: 35,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 38,
+        width: 110,
         borderRadius: 7,
-        marginBottom: 50,
+        marginBottom: 20,
         marginTop: 20,
         backgroundColor: 'rgb(83, 72, 207)',
     },
-    buttonText: {
-        fontFamily: 'Gotham',
+    textoBotao: {
         color: 'white',
         fontSize: 18,
-        fontWeight:450,
+        fontWeight: 800,
+        fontFamily: 'Gotham',
     },
     textCadastro: {
         marginTop: 640,
