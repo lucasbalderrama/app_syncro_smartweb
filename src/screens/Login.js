@@ -80,7 +80,7 @@
         },
         logo: {
             width: 340,
-            height: 270,
+            height: 200,
             resizeMode: 'contain',
             marginTop:600,
         },
