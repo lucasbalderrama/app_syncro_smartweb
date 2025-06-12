@@ -21,7 +21,7 @@ const Login = ({ navigation }) => {
         Alert.alert('Login bem-sucedido!', 'Bem-vindo de volta, ' + data.user.email);
         console.log('Usuário logado:', data.user);
 
-        navigation.navigate("Chat");
+        navigation.navigate("Criar grupo");
     };
 
     const redirecionarCadastro = () => {
