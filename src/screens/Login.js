@@ -1,5 +1,5 @@
     import React, { useState } from 'react';
-    import { View, Text, TextInput, Pressable, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+    import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
     import { supabase } from '../../supabaseConfig';
 
 
@@ -82,7 +82,7 @@
             width: 340,
             height: 200,
             resizeMode: 'contain',
-            marginTop:600,
+            marginTop:700,
         },
         input: {
             height: 42,

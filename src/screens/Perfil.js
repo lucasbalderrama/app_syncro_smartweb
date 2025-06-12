@@ -1,6 +1,6 @@
 import { supabase } from '../../supabaseConfig';
-// import * as ImagePicker from "expo-image-picker";
-// import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator } from "react-native";
 
@@ -9,7 +9,7 @@ const Perfil = ({ navigation }) => {
   const [novoEmail, setNovoEmail] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
   const [senhaAtual, setSenhaAtual] = useState("");
-//   const [fotoAtual, setFotoAtual] = useState("");
+  const [fotoAtual, setFotoAtual] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -42,94 +42,94 @@ const Perfil = ({ navigation }) => {
     fetchUserData();
   }, []);
 
-//   const handlePickImage = async () => {
-//     try {
-//       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-//       if (status !== "granted") {
-//         Alert.alert(
-//           "Permissão necessária",
-//           "Permita o acesso à galeria para trocar a foto."
-//         );
-//         return;
-//       }
+  const handlePickImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permissão necessária",
+          "Permita o acesso à galeria para trocar a foto."
+        );
+        return;
+      }
 
-//       const result = await ImagePicker.launchImageLibraryAsync({
-//         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-//         allowsEditing: true,
-//         aspect: [1, 1],
-//         quality: 0.7,
-//       });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
 
-//       if (!result.canceled && result.assets && result.assets[0].uri) {
-//         await uploadImageToSupabase(result.assets[0].uri);
-//       }
-//     } catch (error) {
-//       console.error("Erro ao selecionar imagem:", error);
-//       Alert.alert("Erro", "Não foi possível selecionar a imagem.");
-//     }
-//   };
+      if (!result.canceled && result.assets && result.assets[0].uri) {
+        await uploadImageToSupabase(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Erro ao selecionar imagem:", error);
+      Alert.alert("Erro", "Não foi possível selecionar a imagem.");
+    }
+  };
 
-//   const uploadImageToSupabase = async (uri) => {
-//     setIsLoading(true);
-//     try {
-//       const { data, error } = await supabase.auth.getUser();
-//       const user = data?.user;
+  const uploadImageToSupabase = async (uri) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      const user = data?.user;
 
-//       if (error || !user) {
-//         Alert.alert("Erro", "Usuário não autenticado.");
-//         return;
-//       }
+      if (error || !user) {
+        Alert.alert("Erro", "Usuário não autenticado.");
+        return;
+      }
 
-//       let fileExt = uri.split(".").pop().toLowerCase();
-//       if (!fileExt || fileExt.length > 4) fileExt = "jpg";
+      let fileExt = uri.split(".").pop().toLowerCase();
+      if (!fileExt || fileExt.length > 4) fileExt = "jpg";
 
-//       const validExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
-//       if (!validExtensions.includes(fileExt)) fileExt = "jpg";
+      const validExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+      if (!validExtensions.includes(fileExt)) fileExt = "jpg";
 
-//       const timestamp = new Date().getTime();
-//       const fileName = `${user.id}+${timestamp}.${fileExt}`;
-//       const filePath = `${user.id}/${fileName}`;
+      const timestamp = new Date().getTime();
+      const fileName = `${user.id}+${timestamp}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
 
-//       // Lê a imagem como base64
-//       const base64 = await FileSystem.readAsStringAsync(uri, {
-//         encoding: FileSystem.EncodingType.Base64,
-//       });
 
-//       const fileBuffer = Uint8Array.from(atob(base64), (c) =>
-//         c.charCodeAt(0)
-//       );
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
 
-//       const { error: uploadError } = await supabase.storage
-//         .from("profile-photos")
-//         .upload(filePath, fileBuffer, {
-//           contentType: `image/${fileExt}`,
-//           upsert: true,
-//         });
+      const fileBuffer = Uint8Array.from(atob(base64), (c) =>
+        c.charCodeAt(0)
+      );
 
-//       if (uploadError) throw uploadError;
+      const { error: uploadError } = await supabase.storage
+        .from("profile-photos")
+        .upload(filePath, fileBuffer, {
+          contentType: `image/${fileExt}`,
+          upsert: true,
+        });
 
-//       const { data: urlData } = supabase.storage
-//         .from("fotos-perfil")
-//         .getPublicUrl(filePath);
+      if (uploadError) throw uploadError;
 
-//       const finalUrl = `${urlData.publicUrl}?t=${timestamp}`;
-//       setFotoAtual(finalUrl);
+      const { data: urlData } = supabase.storage
+        .from("fotos-perfil")
+        .getPublicUrl(filePath);
 
-//       const { error: updateError } = await supabase
-//         .from("users")
-//         .update({ photo_url: finalUrl })
-//         .eq("id", user.id);
+      const finalUrl = `${urlData.publicUrl}?t=${timestamp}`;
+      setFotoAtual(finalUrl);
 
-//       if (updateError) throw updateError;
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ photo_url: finalUrl })
+        .eq("id", user.id);
 
-//       Alert.alert("Sucesso", "Foto de perfil atualizada!");
-//     } catch (error) {
-//       console.error("Erro ao enviar imagem:", error);
-//       Alert.alert("Erro", error.message || "Não foi possível atualizar a foto de perfil.");
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
+      if (updateError) throw updateError;
+
+      Alert.alert("Sucesso", "Foto de perfil atualizada!");
+    } catch (error) {
+      console.error("Erro ao enviar imagem:", error);
+      Alert.alert("Erro", error.message || "Não foi possível atualizar a foto de perfil.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleUpdateProfile = async () => {
     const { data, error } = await supabase.auth.getUser();
@@ -169,6 +169,16 @@ const Perfil = ({ navigation }) => {
   };
 return (
   <View style={styles.container}>
+
+<TouchableOpacity onPress={handlePickImage} style={{ alignItems: "center", marginBottom: 20 }}>
+      {fotoAtual ? ( <Image source={{ uri: fotoAtual }} style={{ width: 120, height: 120, borderRadius: 60 }}/>) 
+      : (
+        <View style={styles.foto}>
+          <Text>Foto</Text>
+        </View>
+      )}
+      <Text style={{ margin: 10, color: "white", fontSize: 16 }}>Alterar Foto</Text>
+    </TouchableOpacity>
 
     <Text style={styles.textInput}>Nome:</Text>
     <TextInput
