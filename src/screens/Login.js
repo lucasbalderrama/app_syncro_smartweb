@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         width: 300,
         height: 300,
         resizeMode: 'contain',
-        marginTop:500,
+        marginTop:600,
     },
     input: {
         height: 40,

@@ -28,7 +28,7 @@ export default function App() {
         }}>
           <Drawer.Screen name="Perfil" component={Perfil} />
           <Drawer.Screen name="Cadastro" component={Cadastro} />
-          <Drawer.Screen name="Login" component={Login} />
+          <Drawer.Screen name="Login" component={Login} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }}/>
           <Drawer.Screen name="Criar grupo" component={CriarGrupo} />
           <Drawer.Screen name="Chat" component={Chat} />
           <Drawer.Screen name="Grupos" component={Grupos} />
