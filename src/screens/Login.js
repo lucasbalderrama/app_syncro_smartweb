@@ -1,5 +1,5 @@
     import React, { useState } from 'react';
-    import { View, Text, TextInput, Pressable, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+    import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
     import { supabase } from '../../supabaseConfig';
 
 
