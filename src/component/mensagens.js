@@ -16,7 +16,7 @@ export default function MessageBubble() {
                     styles.messageBubble,
                     {
                         alignSelf: isLiliv ? 'flex-end' : 'flex-start',
-                        backgroundColor: isLiliv ? '#ADD8E6' : '#d3d3d3', 
+                        backgroundColor: isLiliv ? 'rgb(96, 102, 211)' : 'rgb(80, 77, 94)', 
                     },
                 ]}
             >
@@ -43,8 +43,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginBottom: 2,
         fontWeight: 'bold',
+        color: '#fff',
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        padding: 2,
+        paddingHorizontal: 6,
+        borderRadius: 4,
+        alignSelf: 'flex-start',
     },
     messageText: {
         fontSize: 16,
+        color: '#fff',
     },
 });
