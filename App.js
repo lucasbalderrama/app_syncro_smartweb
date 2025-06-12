@@ -7,7 +7,7 @@ import Cadastro from './src/screens/Cadastro';
 import Perfil from './src/screens/Perfil';
 import Login from './src/screens/Login';
 import Chat from './src/screens/Chat';
-import Grupos from './src/screens/Grupos';
+import Conversas from './src/screens/Conversas';
 import CriarGrupo from './src/screens/CriarGrupo';
 
 const Drawer = createDrawerNavigator();
@@ -31,7 +31,7 @@ export default function App() {
           <Drawer.Screen name="Login" component={Login} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }}/>
           <Drawer.Screen name="Criar grupo" component={CriarGrupo} />
           <Drawer.Screen name="Chat" component={Chat} />
-          <Drawer.Screen name="Grupos" component={Grupos} />
+          <Drawer.Screen name="Conversas" component={Conversas} />
         </Drawer.Navigator>
       </NavigationContainer>
     </View>
