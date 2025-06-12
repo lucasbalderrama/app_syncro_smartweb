@@ -82,7 +82,7 @@
             width: 340,
             height: 200,
             resizeMode: 'contain',
-            marginTop:700,
+            marginTop:600,
         },
         input: {
             height: 42,
