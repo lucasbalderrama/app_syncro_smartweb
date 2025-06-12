@@ -32,13 +32,14 @@ const Login = ({ navigation }) => {
             <View style={styles.forms}>
                 <Image
                     style={styles.logo}
-                    source={require('../assets/logo/logo.png')}
+                    source={require('../assets/logo/logo-preta.png')}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder="Email"
                     onChangeText={setEmail}
                     value={email}
+                       placeholderTextColor={'white'}
                 />
                 <TextInput
                     style={styles.input}
@@ -46,6 +47,7 @@ const Login = ({ navigation }) => {
                     secureTextEntry={true}
                     onChangeText={setPassword}
                     value={password}
+                    placeholderTextColor={'white'}
                 />
 
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -67,26 +69,30 @@ const Login = ({ navigation }) => {
 export default Login;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#1e1e24',
+    },
     forms: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
     logo: {
-        width: 300,
-        height: 300,
+        width: 340,
+        height: 270,
         resizeMode: 'contain',
         marginTop:600,
     },
     input: {
-        height: 40,
-        borderColor:'rgba(83, 72, 207, 0.73)',
-        borderWidth: 1,
-        backgroundColor: '#fff',
+        height: 42,
+        borderColor:'rgba(87, 74, 227, 0.91)',
+        borderWidth: 2,
         marginBottom: 20,
         width: 300,
         paddingLeft: 10,
-        borderRadius: 8,
+        borderRadius: 10,
+        color: 'white',
     },
     button: {
         alignItems: 'center',
@@ -105,25 +111,20 @@ const styles = StyleSheet.create({
         fontFamily: 'Gotham',
     },
     textCadastro: {
-        marginTop: 640,
+        marginTop: 600,
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
         height: 60,
     },
-
     linkCadastro: {
+        color: '#fff',
         fontFamily: 'Gotham',
         fontSize: 16,
-        color: '#000',
     },
-
     linkDestacado: {
-        color: '#2c2dd7',
-        textDecorationLine: 'underline',
-    },
-    esqueceuSenha: {
-        color: '#2c2dd7',
+        color: 'rgb(155, 100, 255)',
+        fontFamily: 'Gotham',
         textDecorationLine: 'underline',
     }
 });
