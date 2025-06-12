@@ -24,8 +24,20 @@ class User {
         _authUser;
 
         async auth(email, password) {
-            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-            if (authError) throw authError;
+            const authData = {};
+            let currentUser = await supabase.auth.getUser();
+            if (currentUser.error) throw currentUser.error;
+            if (currentUser.data.user) {
+                authData.user = currentUser.data.user;
+                let session = await supabase.auth.getSession();
+                if (session.error) throw error;
+                authData.session = session.data.session;
+            } else {
+                const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+                if (signInError) throw signInError;
+                authData.user = signInData.user;
+                authData.session = signInData.session;
+            }
             const { data: userData, error: userError } = await supabase.from("users")
                 .select("id, name, created_at, email")
                 .eq("id", authData.user.id)
