@@ -2,7 +2,9 @@ import { supabase } from '../../supabaseConfig';
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator } from "react-native";
+import {
+  Alert, StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator, Image
+} from "react-native";
 
 const Perfil = ({ navigation }) => {
   const [nome, setNome] = useState("");
@@ -23,19 +25,19 @@ const Perfil = ({ navigation }) => {
         return;
       }
 
-      setNovoEmail(user.email); 
+      setNovoEmail(user.email);
 
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("nome, photo_url")
+        .select("user_name, profile_img")
         .eq("id", user.id)
         .single();
 
       if (userError) {
         console.error("Erro ao carregar dados do usuário:", userError);
       } else {
-        setNome(userData.nome || "");
-        setFotoAtual(userData.photo_url || "");
+        setNome(userData.user_name || "");
+        setFotoAtual(userData.profile_img || "");
       }
     };
 
@@ -100,7 +102,7 @@ const Perfil = ({ navigation }) => {
       );
 
       const { error: uploadError } = await supabase.storage
-        .from("profile-photos")
+        .from("profile-avatar")
         .upload(filePath, fileBuffer, {
           contentType: `image/${fileExt}`,
           upsert: true,
@@ -109,7 +111,7 @@ const Perfil = ({ navigation }) => {
       if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage
-        .from("fotos-perfil")
+        .from("profile-avatar")
         .getPublicUrl(filePath);
 
       const finalUrl = `${urlData.publicUrl}?t=${timestamp}`;
@@ -117,12 +119,11 @@ const Perfil = ({ navigation }) => {
 
       const { error: updateError } = await supabase
         .from("users")
-        .update({ photo_url: finalUrl })
+        .update({ profile_img: finalUrl })
         .eq("id", user.id);
 
       if (updateError) throw updateError;
 
-      Alert.alert("Sucesso", "Foto de perfil atualizada!");
     } catch (error) {
       console.error("Erro ao enviar imagem:", error);
       Alert.alert("Erro", error.message || "Não foi possível atualizar a foto de perfil.");
@@ -143,7 +144,7 @@ const Perfil = ({ navigation }) => {
     try {
       await supabase
         .from("users")
-        .update({ nome: nome })
+        .update({ user_name: nome })
         .eq("id", user.id);
 
       if (novoEmail !== user.email) {
@@ -167,114 +168,126 @@ const Perfil = ({ navigation }) => {
       Alert.alert("Erro", error.message || "Ocorreu um erro ao atualizar o perfil.");
     }
   };
-return (
-  <View style={styles.container}>
+  return (
+    <View style={styles.container}>
 
-<TouchableOpacity onPress={handlePickImage} style={{ alignItems: "center", marginBottom: 20 }}>
-      {fotoAtual ? ( <Image source={{ uri: fotoAtual }} style={{ width: 120, height: 120, borderRadius: 60 }}/>) 
-      : (
-        <View style={styles.foto}>
-          <Text>Foto</Text>
-        </View>
-      )}
-      <Text style={{ margin: 10, color: "white", fontSize: 16 }}>Alterar Foto</Text>
-    </TouchableOpacity>
+      <TouchableOpacity onPress={handlePickImage} style={{ alignItems: "center", marginBottom: 20 }}>
+        {fotoAtual ? (
+          <Image
+            source={{ uri: fotoAtual }}
+            style={{ width: 120, height: 120, borderRadius: 60 }}
+          />
+        ) : (
+          <View style={styles.foto}>
+            <Image
+              source={require("../assets/perfil.png")}
+              style={{ width: 120, height: 120, borderRadius: 60 }}
+            />
+          </View>
+        )}
+        <Text style={{ margin: 10, color: "white", fontSize: 16 }}>Alterar Foto</Text>
+      </TouchableOpacity>
 
-    <Text style={styles.textInput}>Nome:</Text>
-    <TextInput
-      style={{
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-      }}
-      placeholder="Digite seu nome"
-      value={nome}
-      onChangeText={setNome}
-      placeholderTextColor={'white'}
-    />
 
-    <Text style={styles.textInput}>Email:</Text>
-    <TextInput
-      style={{
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-      }}
-      placeholder="Digite seu email"
-      value={novoEmail}
-      onChangeText={setNovoEmail}
-      keyboardType="email-address"
-      autoCapitalize="none"
-      placeholderTextColor={'white'}
-    />
+      <Text style={styles.textInput}>Nome:</Text>
+      <TextInput
+        style={{
+          borderWidth: 1,
+          borderColor: "#ccc",
+          borderRadius: 5,
+          padding: 10,
+          marginBottom: 15,
+          color: 'white'
+        }}
+        placeholder="Digite seu nome"
+        value={nome}
+        onChangeText={setNome}
+        placeholderTextColor={'white'}
+      />
 
-    <Text style={styles.textInput}>Nova senha:</Text>
-    <TextInput
-      style={{
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-      }}
-      placeholder="Digite a nova senha"
-      value={novaSenha}
-      onChangeText={setNovaSenha}
-      secureTextEntry
-      placeholderTextColor={'white'}
-    />
+      <Text style={styles.textInput}>Email:</Text>
+      <TextInput
+        style={{
+          borderWidth: 1,
+          borderColor: "#ccc",
+          borderRadius: 5,
+          padding: 10,
+          marginBottom: 15,
+          color: 'white'
+        }}
+        placeholder="Digite seu email"
+        value={novoEmail}
+        onChangeText={setNovoEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        placeholderTextColor={'white'}
+      />
 
-    <TouchableOpacity onPress={handleUpdateProfile} style={styles.botaoSalvar} disabled={isLoading}>
-      {isLoading ? ( <ActivityIndicator color="#fff" />) 
-      : (
-        <Text style={styles.textSalvar}>Salvar alterações</Text>
-      )}
-    </TouchableOpacity>
-  </View>
-);
+      <Text style={styles.textInput}>Nova senha:</Text>
+      <TextInput
+        style={{
+          borderWidth: 1,
+          borderColor: "#ccc",
+          borderRadius: 5,
+          padding: 10,
+          marginBottom: 15,
+          color: 'white'
+        }}
+        placeholder="Digite a nova senha"
+        value={novaSenha}
+        onChangeText={setNovaSenha}
+        secureTextEntry
+        placeholderTextColor={'white'}
+      />
+
+      <TouchableOpacity onPress={handleUpdateProfile} style={styles.botaoSalvar} disabled={isLoading}>
+        {isLoading ? (<ActivityIndicator color="#fff" />)
+          : (
+            <Text style={styles.textSalvar}>Salvar alterações</Text>
+          )}
+      </TouchableOpacity>
+    </View>
+  );
 
 };
 
 export default Perfil;
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgb(76, 0, 216)',
+    backgroundColor: '#2e2e34',
     height: 1000,
     flex: 1,
     padding: 30,
     justifyContent: 'center',
   },
   input: {
-    width: 230,
-    height: 50,
-    borderWidth: 1,
+    height: 42,
     borderColor: '#ccc',
-    borderRadius: 30,
     padding: 10,
     fontSize: 18,
-    marginBottom: 15,
     backgroundColor: '#fff',
     color: '#fff',
+    borderWidth: 2,
+    marginBottom: 20,
+    width: 300,
+    paddingLeft: 10,
+    borderRadius: 10,
   },
-  textInput:{
+  textInput: {
     fontFamily: 'Gotham',
     fontWeight: 700,
-    color: '#D9EAFD',
-    fontSize: 20,
+    color: '#fff',
+    fontSize: 15,
     marginBottom: 10,
   },
   img: {
-    width: 150,
-    height: 140,
-    marginRight: 'auto',
-    marginLeft: 'auto',
-    borderRadius: 900,
-    marginTop: 70,
-    marginBottom: 25,
+    width: 110,
+    height: 110,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 100
   },
   foto: {
     width: 165,
@@ -283,24 +296,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
-},
-botaoSalvar:{
+  },
+  botaoSalvar: {
     alignItems: 'center',
     marginTop: 30,
-    backgroundColor: '#f2f2f2',
-    width:180,
+    backgroundColor: 'rgb(83, 72, 207)',
+    width: 180,
     height: 40,
     borderRadius: 20,
     padding: 7,
     marginLeft: 'auto',
     marginRight: 'auto',
-},
-textSalvar:{
-    color: 'rgba(76, 0, 216, 0.96)',
+  },
+  textSalvar: {
+    color: '#fff',
     fontSize: 18,
     fontFamily: 'Gotham',
     fontWeight: 700,
     textAlign: 'center',
-}
+  }
 });
 

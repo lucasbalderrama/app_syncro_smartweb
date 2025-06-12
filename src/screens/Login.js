@@ -121,6 +121,7 @@
             color: '#fff',
             fontFamily: 'Gotham',
             fontSize: 16,
+            marginRight: 10,
         },
         linkDestacado: {
             color: 'rgb(155, 100, 255)',
