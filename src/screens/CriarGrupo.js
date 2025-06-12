@@ -117,8 +117,8 @@ export default function CriarGrupo({ }) {
                             }}
                         >
                             <View>
-                                <Text style={styles.userName}>{user.name}</Text>
-                                <Text style={styles.userEmail}>{user.email}</Text>
+                                <Text style={styles.userName}>{user.user_name}</Text>
+                                <Text style={styles.userEmail}>{user.user_email}</Text>
                             </View>
                             <RadioButton
                                 value={user.id}

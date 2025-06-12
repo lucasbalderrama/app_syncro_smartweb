@@ -80,7 +80,7 @@ export default function ChatScreen() {
                 styles.Mensagens,
                 {
                     alignSelf: isMyMessage ? 'flex-end' : 'flex-start',
-                    backgroundColor: isMyMessage ? '#add8e6' : '#DCF8C6'
+                    backgroundColor: isMyMessage ? '#add8e6' : '#d3d3d3'
                 }
             ]}>
                 <Text style={styles.messageText}>{item.text}</Text>
@@ -93,7 +93,7 @@ export default function ChatScreen() {
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 20}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 50}
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.container}>
@@ -115,6 +115,7 @@ export default function ChatScreen() {
                                 onChangeText={setMessage}
                                 placeholder="Digite sua mensagem"
                                 style={styles.input}
+                                placeholderTextColor="#aaaa"
                             />
                             <TouchableOpacity onPress={sendMessage} style={styles.registerButton}>
                                 <Text style={styles.botao}>Enviar</Text>
@@ -130,11 +131,12 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginBottom: 50,
+        backgroundColor: '#2e2e34',
     },
     messagesContainer: {
         padding: 10,
         flexGrow: 1,
+        backgroundColor: '#2e2e34',
     },
     Mensagens: {
         padding: 10,
@@ -149,21 +151,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         borderTopWidth: 1,
-        borderColor: '#ccc',
-        backgroundColor: '#fff',
+        borderColor: '#1e1e24',
+        backgroundColor: '#1e1e24',
         alignItems: 'center',
     },
     input: {
         flex: 1,
-        backgroundColor: '#eee',
+        backgroundColor: 'rgba(255, 255, 255, 0.23)',
         padding: 10,
-        borderRadius: 20,
+        borderRadius: 8,
         marginRight: 10,
+        color: '#fff',
     },
     registerButton: {
-        backgroundColor: '#924DBF',
+        backgroundColor: '#5e00d8',
         padding: 10,
-        borderRadius: 15,
+        borderRadius: 8,
         alignItems: 'center',
     },
     botao: {
