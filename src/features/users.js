@@ -103,6 +103,19 @@ class User {
             return null;
         }
 
+        async fetch(id) {
+            let fetchUser = await this._service.get(id);
+            if (fetchUser) {
+                this._storage.set(fetchUser.id, fetchUser);
+                return fetchUser;
+            }
+            return fetchUser ?? null;
+        }
+
+        getLocal(id) {
+            return this._storage.get(id) ?? null;
+        }
+
         static create() {
             return new User.Repository(privateConstructorKey);
         }
@@ -125,5 +138,7 @@ class AuthUser extends User {
     _session;
     _auth;
 }
+
+User.Auth = AuthUser;
 
 export default User;

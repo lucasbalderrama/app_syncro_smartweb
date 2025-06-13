@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 
 export default function NativeStack() {
     return (
-        <Stack.Navigator initialRouteName="Login" screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName="Login">
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Cadastro" component={Cadastro} />
             <Stack.Screen name="Chat" component={Chat} />

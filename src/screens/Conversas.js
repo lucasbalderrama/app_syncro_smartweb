@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Pressable } from 'react-native';
 import { supabase } from '../../supabaseConfig.js';
+import Contatos from '../component/contatos.js';
 
 export default function Grupos({ navigation }) {
     const [groups, setGroups] = useState([]);

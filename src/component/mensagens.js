@@ -1,9 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function MessageBubble({ currentUser, message }) {
-    const isLiliv = currentUser.id === message.user_id;
-    const renderMessage = (message, index) => {
+export default function MessageBubble() {
+    const messages = [
+        { username: 'liliv', text: 'oi! a mensagem de teste do syncro :D' },
+        { username: 'lucas', text: 'Oi! eu sou e lucas e adoro o react native' },
+    ];
+
+    const renderMessage = ({ username, text }, index) => {
+        const isLiliv = username === 'liliv';
         return (
             <View
                 key={index}
@@ -11,7 +16,7 @@ export default function MessageBubble({ currentUser, message }) {
                     styles.messageBubble,
                     {
                         alignSelf: isLiliv ? 'flex-end' : 'flex-start',
-                        backgroundColor: isLiliv ? '#ADD8E6' : '#d3d3d3', 
+                        backgroundColor: isLiliv ? 'rgb(96, 102, 211)' : 'rgb(80, 77, 94)', 
                     },
                 ]}
             >
@@ -21,23 +26,7 @@ export default function MessageBubble({ currentUser, message }) {
         );
     };
 
-    // return <View style={styles.container}>{messages.map(renderMessage)}</View>;
-
-    return (
-        <View
-            key={index}
-            style={[
-                styles.messageBubble,
-                {
-                    alignSelf: isLiliv ? 'flex-end' : 'flex-start',
-                    backgroundColor: isLiliv ? '#ADD8E6' : '#d3d3d3', 
-                },
-            ]}
-        >
-            <Text style={styles.userName}>{message.user_id}</Text>
-            <Text style={styles.messageText}>{message.content}</Text>
-        </View>
-    );
+    return <View style={styles.container}>{messages.map(renderMessage)}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -54,8 +43,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginBottom: 2,
         fontWeight: 'bold',
+        color: '#fff',
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        padding: 2,
+        paddingHorizontal: 6,
+        borderRadius: 4,
+        alignSelf: 'flex-start',
     },
     messageText: {
         fontSize: 16,
+        color: '#fff',
     },
 });
