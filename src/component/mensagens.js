@@ -1,22 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function MessageBubble() {
-    const messages = [
-        { username: 'liliv', text: 'oi! a mensagem de teste do syncro :D' },
-        { username: 'lucas', text: 'Oi! eu sou e lucas e adoro o react native' },
-    ];
-
-    const renderMessage = ({ username, text }, index) => {
-        const isLiliv = username === 'liliv';
-        return (
+export default function MessageBubble({ username, text, isFromUser, id }) {
+    return (
             <View
-                key={index}
+                key={id}
                 style={[
                     styles.messageBubble,
                     {
-                        alignSelf: isLiliv ? 'flex-end' : 'flex-start',
-                        backgroundColor: isLiliv ? 'rgb(96, 102, 211)' : 'rgb(80, 77, 94)', 
+                        alignSelf: isFromUser ? 'flex-end' : 'flex-start',
+                        backgroundColor: isFromUser ? 'rgb(96, 102, 211)' : 'rgb(80, 77, 94)', 
                     },
                 ]}
             >
@@ -24,9 +17,6 @@ export default function MessageBubble() {
                 <Text style={styles.messageText}>{text}</Text>
             </View>
         );
-    };
-
-    return <View style={styles.container}>{messages.map(renderMessage)}</View>;
 }
 
 const styles = StyleSheet.create({

@@ -32,7 +32,7 @@ export default function App() {
           <Drawer.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
           <Drawer.Screen name="Login" component={Login} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
           <Drawer.Screen name="Criar grupo" component={CriarGrupo} />
-          <Drawer.Screen name="Chat" component={Chat} />
+          <Drawer.Screen name="Chat" component={Chat} options={{ drawerItemStyle: { display: 'none' } }} />
           <Drawer.Screen name="Conversas" component={Conversas} />
         </Drawer.Navigator>
       </NavigationContainer>

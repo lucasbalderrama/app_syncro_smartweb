@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Pressable } from 'react-native';
 import { supabase } from '../../supabaseConfig.js';
 import Contatos from '../component/contatos.js';
+import Group from '../features/groups.js';
+import User from '../features/users.js';
 
 export default function Grupos({ navigation }) {
     const [groups, setGroups] = useState([]);
@@ -9,38 +11,41 @@ export default function Grupos({ navigation }) {
 
     useEffect(() => {
         async function fetchUserGroups() {
-            setLoading(true);
-            const { data: userData, error: userError } = await supabase.auth.getUser();
-            if (userError || !userData?.user) {
-                setGroups([]);
-                setLoading(false);
-                return;
-            }
-            const userId = userData.user.id;
+            const userAuth = await User.Service.auth();
+            const groups = await Group.Service.getRelateds(userAuth);
+            setGroups(groups ?? []);
+            // setLoading(true);
+            // const { data: userData, error: userError } = await supabase.auth.getUser();
+            // if (userError || !userData?.user) {
+            //     setGroups([]);
+            //     setLoading(false);
+            //     return;
+            // }
+            // const userId = userData.user.id;
 
-            const { data: memberships, error: memberError } = await supabase
-                .from('group_members')
-                .select('group_id')
-                .eq('user_id', userId);
+            // const { data: memberships, error: memberError } = await supabase
+            //     .from('group_members')
+            //     .select('group_id')
+            //     .eq('user_id', userId);
 
-            if (memberError || !memberships || memberships.length === 0) {
-                setGroups([]);
-                setLoading(false);
-                return;
-            }
+            // if (memberError || !memberships || memberships.length === 0) {
+            //     setGroups([]);
+            //     setLoading(false);
+            //     return;
+            // }
 
-            const groupIds = memberships.map(m => m.group_id);
+            // const groupIds = memberships.map(m => m.group_id);
 
-            const { data: groupsData, error: groupsError } = await supabase
-                .from('groups')
-                .select('*')
-                .in('id', groupIds);
+            // const { data: groupsData, error: groupsError } = await supabase
+            //     .from('groups')
+            //     .select('*')
+            //     .in('id', groupIds);
 
-            if (groupsError) {
-                setGroups([]);
-            } else {
-                setGroups(groupsData);
-            }
+            // if (groupsError) {
+            //     setGroups([]);
+            // } else {
+            //     setGroups(groupsData);
+            // }
             setLoading(false);
         }
 
@@ -52,7 +57,14 @@ export default function Grupos({ navigation }) {
             <Text style={styles.title}>Seus grupos</Text>
             <ScrollView style={styles.scrollView}>
                 {groups.map((group) => (
-                    <TouchableOpacity key={group.id} style={styles.groupItem}>
+                    <TouchableOpacity key={group.id} style={styles.groupItem} onPress={() => {
+                        navigation.navigate("Chat", {
+                            group: {
+                                name: group.name,
+                                id: group.id,
+                            },
+                        })
+                    }}>
                         <Text style={styles.groupName}>{group.name}</Text>
                     </TouchableOpacity>
                 ))}

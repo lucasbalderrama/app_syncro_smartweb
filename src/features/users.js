@@ -6,8 +6,8 @@ class User {
     constructor(key, userData) {
         if (key !== privateConstructorKey) throw new TypeError("Private constructor");
         this.id = userData.id;
-        this.name = userData.name;
-        this.email = userData.email;
+        this.name = userData.user_name;
+        this.email = userData.user_email;
         this.createdAt = new Date(userData.created_at);
     }
 
@@ -21,9 +21,7 @@ class User {
             if (key !== privateConstructorKey) throw new TypeError("Private constructor");
         }
 
-        _authUser;
-
-        async auth(email, password) {
+        static async auth(email, password) {
             const authData = {};
             let currentUser = await supabase.auth.getUser();
             if (currentUser.error) throw currentUser.error;
@@ -39,12 +37,11 @@ class User {
                 authData.session = signInData.session;
             }
             const { data: userData, error: userError } = await supabase.from("users")
-                .select("id, name, created_at, email")
+                .select("id, user_name, created_at, user_email")
                 .eq("id", authData.user.id)
                 .single();
             if (userError) throw userError;
             const authUser = new AuthUser(privateConstructorKey, authData.session, authData.user, userData);
-            this._authUser = authUser;
             return authUser;
         }
 
@@ -57,7 +54,7 @@ class User {
             if (authError) throw authError;
             const { data: userData, error: userError } = await supabase.from("users")
                 .insert([{ id: authData.user.id, name, email }])
-                .select("id, name, created_at, email")
+                .select("id, user_name, created_at, user_email")
                 .single();
             if (userError) throw userError;
             const authUser = new AuthUser(privateConstructorKey, authData.session, authData.user, userData);
@@ -70,7 +67,26 @@ class User {
             if (error) throw error;
         }
 
-        async get(id) {} // único para todos, o resto é para o do _authUser;
+        async get(id) { // único para todos, o resto é para o do _authUser;
+            if (!id) throw new TypeError("User ID is required");
+            const { data: userData, error: userError } = await supabase.from("users")
+                .select("id, user_name, created_at, user_email")
+                .eq("id", id)
+                .single();
+            if (userError) throw userError;
+            return new User(privateConstructorKey, userData);
+        }
+
+        async getRelateds() {
+            if (!this._authUser) throw new Error("Not authenticated");
+            const authUserId = this._authUser.id;
+            const { data: users, error } = await supabase
+                .from("chats")
+                .select("*")
+                .or(`user1_id.eq.${authUserId},user2_id.eq.${authUserId}`);
+            if (error) throw error;
+            return users;
+        }
 
         async update(info = {}) {}
 
@@ -87,7 +103,7 @@ class User {
         _service = new User.Service(privateConstructorKey);
 
         async auth(email, password) {
-            this._authUser = await this._service.auth(email, password);
+            this._authUser = await User.Service.auth(email, password);
             this._storage.set(this._authUser.id, this._authUser);
             return this._authUser;
         }
@@ -114,6 +130,15 @@ class User {
 
         getLocal(id) {
             return this._storage.get(id) ?? null;
+        }
+
+        async getRelateds() {
+            if (!this._authUser) throw new Error("Not authenticated");
+            const relatedUsers = await this._service.getRelateds();
+            for (const user of relatedUsers) {
+                this._storage.set(user.id, new User(privateConstructorKey, user));
+            }
+            return relatedUsers;
         }
 
         static create() {
