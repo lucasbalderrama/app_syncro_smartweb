@@ -1,5 +1,4 @@
-// DrawerContent.js
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, SafeAreaView } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { supabase } from '../../supabaseConfig';
 
@@ -17,27 +16,27 @@ export default function CustomDrawerContent(props) {
   };
 
   return (
-    <DrawerContentScrollView {...props} style={styles.bar}>
+    <DrawerContentScrollView {...props} style={styles.bar} contentContainerStyle={{ flexGrow: 1 }}>
       <DrawerItemList {...props} />
-      <View style={styles.logoutContainer}>
+      <SafeAreaView style={styles.logoutContainer}>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
           <Text style={styles.logoutText}>Sair da Conta</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     </DrawerContentScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   bar: {
-    backgroundColor: 'rgb(19, 19, 24)'
+    backgroundColor: 'rgb(19, 19, 24)',
   },
   logoutContainer: {
-    marginTop: 20,
+    marginTop: 'auto', 
     paddingHorizontal: 20,
+    paddingBottom: 20, 
   },
   logoutButton: {
-    marginTop: 480,
     backgroundColor: 'rgb(83, 72, 207)',
     padding: 10,
     borderRadius: 8,

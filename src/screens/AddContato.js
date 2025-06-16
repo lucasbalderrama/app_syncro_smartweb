@@ -8,7 +8,9 @@ import {
     Alert,
     Modal,
     TextInput,
+    SafeAreaView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../supabaseConfig';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -19,6 +21,8 @@ export default function AdicionarContato() {
     const [modalVisivel, setModalVisivel] = useState(false);
     const [novoNome, setNovoNome] = useState('');
     const [novoEmail, setNovoEmail] = useState('');
+
+    const insets = useSafeAreaInsets(); // pega as áreas seguras
 
     useEffect(() => {
         async function carregarDados() {
@@ -41,22 +45,22 @@ export default function AdicionarContato() {
     };
 
     const confirmarContato = () => {
-    if (!novoNome.trim() || !novoEmail.trim()) {
-        Alert.alert('Erro', 'Preencha todos os campos.');
-        return;
-    }
+        if (!novoNome.trim() || !novoEmail.trim()) {
+            Alert.alert('Erro', 'Preencha todos os campos.');
+            return;
+        }
 
-    setModalVisivel(false); 
+        setModalVisivel(false);
 
-    setTimeout(() => {
-        Alert.alert('Contato adicionado', `Nome: ${novoNome}\nEmail: ${novoEmail}`);
-    }, 300); 
-};
+        setTimeout(() => {
+            Alert.alert('Contato adicionado', `Nome: ${novoNome}\nEmail: ${novoEmail}`);
+        }, 300);
+    };
 
     const usuariosFiltrados = usuarios.filter((u) => u.id !== meuId);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom || 20 }]}>
             <Text style={styles.title}>Meus contatos</Text>
 
             <ScrollView style={styles.scrollView}>
@@ -112,7 +116,7 @@ export default function AdicionarContato() {
                     </View>
                 </View>
             </Modal>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -120,7 +124,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#1e1e24',
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop: 20,
     },
     title: {
         fontSize: 24,

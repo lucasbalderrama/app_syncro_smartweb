@@ -108,7 +108,7 @@ export default function ChatScreen({ route }) {
         const fMessage = message.trim();
         if (fMessage) {
             try {
-                await chatRepository.sendMessage(fMessage);;
+                await chatRepository.sendMessage(fMessage);
                 setMessage('');
             } catch (err) {
                 console.error(err);
@@ -139,24 +139,28 @@ export default function ChatScreen({ route }) {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#2e2e34' }}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 50}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined} 
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} 
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.container}>
 
                         { loading ?
-                            <ActivityIndicator/> : // precisa centralizar e estilizar
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="large" color="#5e00d8" />
+                            </View> :
                             <>
                                 {/* <Mensagens /> */}
                                 <FlatList
                                     data={messages}
                                     renderItem={renderItem}
                                     keyExtractor={item => item.id}
-                                    contentContainerStyle={styles.messagesContainer}
+                                    contentContainerStyle={{ paddingBottom: 10 }}
+                                    style={styles.flatList}
+                                    inverted 
                                 />
 
                                 <View style={styles.inputContainer}>
@@ -166,6 +170,7 @@ export default function ChatScreen({ route }) {
                                         placeholder="Digite sua mensagem"
                                         style={styles.input}
                                         placeholderTextColor="#aaaa"
+                                        multiline 
                                     />
                                     <TouchableOpacity onPress={sendMessage} style={styles.registerButton}>
                                         <Text style={styles.botao}>Enviar</Text>
@@ -174,7 +179,6 @@ export default function ChatScreen({ route }) {
                             </>
                         }
 
-                        {/* Mensagens do banco */}
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
@@ -186,10 +190,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#2e2e34',
+        justifyContent: 'flex-end', 
     },
-    messagesContainer: {
-        padding: 10,
-        flexGrow: 1,
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    flatList: {
+        flex: 1,
+        paddingHorizontal: 10,
         backgroundColor: '#2e2e34',
     },
     Mensagens: {
@@ -216,12 +226,14 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginRight: 10,
         color: '#fff',
+        maxHeight: 100, 
     },
     registerButton: {
         backgroundColor: '#5e00d8',
         padding: 10,
         borderRadius: 8,
         alignItems: 'center',
+        justifyContent: 'center',
     },
     botao: {
         color: 'white',
