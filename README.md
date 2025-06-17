@@ -63,7 +63,7 @@ Instale as dependências:
 
 npm install
 
-# ou
+ou
 
 yarn
 
