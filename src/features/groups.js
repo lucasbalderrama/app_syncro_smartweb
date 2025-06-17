@@ -18,6 +18,16 @@ class Group {
             if (key !== privateConstructorKey) throw new TypeError("Private constructor");
         }
 
+        async get(id) {
+            if (!id) throw new TypeError("Group ID is required");
+            const { data, error } = await supabase.from("groups")
+                .select("*")
+                .eq("id", id)
+                .single();
+            if (error) throw error;
+            return new Group(privateConstructorKey, data);
+        }
+
         static async getRelateds(auth, id) {
             if (!(auth instanceof User.Auth)) throw new TypeError("Invalid authentication object");
             const { data: groups, error: groupsError } = await supabase.rpc("get_groups_by_user", { p_user_id: auth.id });

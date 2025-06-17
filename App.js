@@ -32,10 +32,10 @@ export default function App() {
           <Drawer.Screen name="Perfil" component={Perfil} />
           <Drawer.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
           <Drawer.Screen name="Login" component={Login} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
-          <Drawer.Screen name="Criar grupo" component={CriarGrupo} />
           <Drawer.Screen name="Chat" component={Chat} options={{ drawerItemStyle: { display: 'none' } }} />
-          <Drawer.Screen name="Conversas" component={Conversas} />
-          <Drawer.Screen name="AddContato" component={AddContato} />
+          <Drawer.Screen name="AddContato" component={AddContato} options={{ title: "Conversas" }} />
+          <Drawer.Screen name="Conversas" component={Conversas} options={{ title: "Grupos" }} />
+          <Drawer.Screen name="Criar grupo" component={CriarGrupo} />
         </Drawer.Navigator>
       </NavigationContainer>
 

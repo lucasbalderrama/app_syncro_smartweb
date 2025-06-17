@@ -4,53 +4,30 @@ import { supabase } from '../../supabaseConfig.js';
 import Contatos from '../component/contatos.js';
 import Group from '../features/groups.js';
 import User from '../features/users.js';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Grupos({ navigation }) {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        async function fetchUserGroups() {
-            const userAuth = await User.Service.auth();
-            const groups = await Group.Service.getRelateds(userAuth);
-            setGroups(groups ?? []);
-            // setLoading(true);
-            // const { data: userData, error: userError } = await supabase.auth.getUser();
-            // if (userError || !userData?.user) {
-            //     setGroups([]);
-            //     setLoading(false);
-            //     return;
-            // }
-            // const userId = userData.user.id;
-
-            // const { data: memberships, error: memberError } = await supabase
-            //     .from('group_members')
-            //     .select('group_id')
-            //     .eq('user_id', userId);
-
-            // if (memberError || !memberships || memberships.length === 0) {
-            //     setGroups([]);
-            //     setLoading(false);
-            //     return;
-            // }
-
-            // const groupIds = memberships.map(m => m.group_id);
-
-            // const { data: groupsData, error: groupsError } = await supabase
-            //     .from('groups')
-            //     .select('*')
-            //     .in('id', groupIds);
-
-            // if (groupsError) {
-            //     setGroups([]);
-            // } else {
-            //     setGroups(groupsData);
-            // }
-            setLoading(false);
-        }
-
-        fetchUserGroups();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            let isActive = true;
+            async function fetchUserGroups() {
+                const userAuth = await User.Service.auth();
+                const groups = await Group.Service.getRelateds(userAuth);
+                if (isActive) {
+                    setGroups(groups ?? []);
+                    setLoading(false);
+                }
+            }
+            setLoading(true);
+            fetchUserGroups();
+            return () => {
+                isActive = false;
+            };
+        }, [])
+    );
 
     return (
         <View style={styles.container}>

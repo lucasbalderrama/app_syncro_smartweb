@@ -13,10 +13,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../supabaseConfig';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import User from '../features/users.js';
+import Chat from '../features/chats.js';
 
-export default function AdicionarContato() {
+export default function AdicionarContato({ navigation }) {
     const [usuarios, setUsuarios] = useState([]);
     const [meuId, setMeuId] = useState(null);
+    const [userRepo, setUserRepo] = useState(null);
 
     const [modalVisivel, setModalVisivel] = useState(false);
     const [novoNome, setNovoNome] = useState('');
@@ -25,17 +28,37 @@ export default function AdicionarContato() {
     const insets = useSafeAreaInsets(); // pega as áreas seguras
 
     useEffect(() => {
-        async function carregarDados() {
-            const { data: userData } = await supabase.auth.getUser();
-            if (userData?.user) {
-                setMeuId(userData.user.id);
-            }
+        // async function carregarDados() {
+        //     const { data: userData } = await supabase.auth.getUser();
+        //     if (userData?.user) {
+        //         setMeuId(userData.user.id);
+        //     }
 
-            const { data, error } = await supabase.from('users').select('*');
-            if (!error) setUsuarios(data);
-        }
+        //     const { data, error } = await supabase.from('users').select('*');
+        //     if (!error) setUsuarios(data);
+        // }
 
-        carregarDados();
+        // carregarDados();
+        
+        (async () => {
+            const userRepo = User.Repository.create();
+            setUserRepo(userRepo);
+            await userRepo.auth();
+            const chats = await userRepo.getRelateds();
+            const usersParsed = await Promise.all(chats.map(async user => {
+                const chat = await Chat.Service.get(user.id);
+                const userInfo = await userRepo.get(
+                    chat.user1Id === userRepo._authUser.id ? chat.user2Id : chat.user1Id
+                );
+                return {
+                    id: userInfo.id,
+                    name: userInfo.name,
+                    email: userInfo.email,
+                    chat,
+                };
+            }));
+            setUsuarios(usersParsed);
+        })();
     }, []);
 
     const abrirModal = () => {
@@ -44,18 +67,18 @@ export default function AdicionarContato() {
         setModalVisivel(true);
     };
 
-    const confirmarContato = () => {
-        if (!novoNome.trim() || !novoEmail.trim()) {
-            Alert.alert('Erro', 'Preencha todos os campos.');
-            return;
-        }
+    // const confirmarContato = () => {
+    //     if (!novoNome.trim() || !novoEmail.trim()) {
+    //         Alert.alert('Erro', 'Preencha todos os campos.');
+    //         return;
+    //     }
 
-        setModalVisivel(false);
+    //     setModalVisivel(false);
 
-        setTimeout(() => {
-            Alert.alert('Contato adicionado', `Nome: ${novoNome}\nEmail: ${novoEmail}`);
-        }, 300);
-    };
+    //     setTimeout(() => {
+    //         Alert.alert('Contato adicionado', `Nome: ${novoNome}\nEmail: ${novoEmail}`);
+    //     }, 300);
+    // };
 
     const usuariosFiltrados = usuarios.filter((u) => u.id !== meuId);
 
@@ -65,12 +88,16 @@ export default function AdicionarContato() {
 
             <ScrollView style={styles.scrollView}>
                 {usuariosFiltrados.map((usuario) => (
-                    <View key={usuario.id} style={styles.usuario}>
-                        <View>
-                            <Text style={styles.nome}>{usuario.user_name}</Text>
-                            <Text style={styles.email}>{usuario.user_email}</Text>
+                    <TouchableOpacity onPress={async () => {
+                        navigation.navigate('Chat', { chat: usuario.chat });
+                    }} key={usuario.id}>
+                        <View key={usuario.id} style={styles.usuario}>
+                            <View>
+                                <Text style={styles.nome}>{usuario.name}</Text>
+                                <Text style={styles.email}>{usuario.email}</Text>
+                            </View>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
 
@@ -89,13 +116,13 @@ export default function AdicionarContato() {
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalTitulo}>Novo contato</Text>
 
-                        <TextInput
+                        {/* <TextInput
                             placeholder="Nome"
                             placeholderTextColor="#aaa"
                             style={styles.input}
                             value={novoNome}
                             onChangeText={setNovoNome}
-                        />
+                        /> */}
                         <TextInput
                             placeholder="E-mail"
                             placeholderTextColor="#aaa"
@@ -109,7 +136,41 @@ export default function AdicionarContato() {
                             <TouchableOpacity onPress={() => setModalVisivel(false)} style={styles.botaoCancelar}>
                                 <Text style={styles.botaoTexto}>Cancelar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={confirmarContato} style={styles.botaoConfirmar}>
+                            <TouchableOpacity onPress={async () => {
+                                let user;
+                                try {
+                                    user = await userRepo.getByEmail(novoEmail);
+                                } catch (err) {
+                                    Alert.alert('Erro', 'Usuário não encontrado.');
+                                    return;
+                                }
+                                
+                                const myUser = userRepo._authUser;
+                                const { data, error } = await supabase.from("chats").insert({
+                                    user1_id: myUser.id,
+                                    user2_id: user.id,
+                                });
+                                if (error) {
+                                    console.log(error);
+                                    Alert.alert('Erro', 'Não foi possível adicionar o contato.');
+                                    return;
+                                } else {
+                                    const chat = await Chat.Service.get(data[0].id);
+                                    const chatUser = {
+                                        id: user.id,
+                                        name: user.name,
+                                        email: user.email,
+                                        chat,
+                                    };
+                                    setUsuarios(prev => [
+                                        ...prev,
+                                        chatUser
+                                    ]);
+                                    navigation.navigate('Chat', { chat });
+                                    setModalVisivel(false);
+                                    Alert.alert('Sucesso', 'Contato adicionado com sucesso.');
+                                }
+                            }} style={styles.botaoConfirmar}>
                                 <Text style={styles.botaoTexto}>Adicionar</Text>
                             </TouchableOpacity>
                         </View>

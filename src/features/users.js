@@ -77,15 +77,25 @@ class User {
             return new User(privateConstructorKey, userData);
         }
 
-        async getRelateds() {
-            if (!this._authUser) throw new Error("Not authenticated");
-            const authUserId = this._authUser.id;
+        async getRelateds(auth) {
+            if (!auth) throw new Error("Not authenticated");
+            const authUserId = auth.id;
             const { data: users, error } = await supabase
                 .from("chats")
                 .select("*")
                 .or(`user1_id.eq.${authUserId},user2_id.eq.${authUserId}`);
             if (error) throw error;
             return users;
+        }
+
+        async getByEmail(email) {
+            if (!email) throw new TypeError("Email is required");
+            const { data: userData, error: userError } = await supabase.from("users")
+                .select("id, user_name, created_at, user_email")
+                .eq("user_email", email)
+                .single();
+            if (userError) throw userError;
+            return new User(privateConstructorKey, userData);
         }
 
         async update(info = {}) {}
@@ -134,11 +144,23 @@ class User {
 
         async getRelateds() {
             if (!this._authUser) throw new Error("Not authenticated");
-            const relatedUsers = await this._service.getRelateds();
+            const relatedUsers = await this._service.getRelateds(this._authUser);
             for (const user of relatedUsers) {
                 this._storage.set(user.id, new User(privateConstructorKey, user));
             }
             return relatedUsers;
+        }
+
+        async getByEmail(email) {
+            if (!email) throw new TypeError("Email is required");
+            const inStorage = [...this._storage.values()].find(user => user.email === email);
+            if (inStorage) return inStorage;
+            const user = await this._service.getByEmail(email);
+            if (user) {
+                this._storage.set(user.id, user);
+                return user;
+            }
+            return null;
         }
 
         static create() {

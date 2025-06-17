@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
     View, TextInput, FlatList, Text,
     StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity,
@@ -12,8 +12,11 @@ import { supabase } from '../../supabaseConfig.js';
 import User from '../features/users.js';
 import Chat from '../features/chats.js';
 import Group from '../features/groups.js';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function ChatScreen({ route }) {
+export default function ChatScreen({ route, navigation }) {
+    console.log(route.params);
+
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -22,31 +25,94 @@ export default function ChatScreen({ route }) {
 
     const [ chatRepository, setChatRepository ] = useState(null);
 
-    useEffect(() => {
-        (async () => {
-            const routeParams = route.params || {};
-            console.log(routeParams)
-            if (routeParams.chat) {
-                return 
-            } else if (routeParams.group) {
-                const user = await User.Service.auth();
-                const groupRepo = Group.Repository.create(user, routeParams.group.id);
-                setUser(user);
-                setChatRepository(groupRepo);
-                const msgs = await groupRepo.loadMessages();
-                const msgsWithUser = await Promise.all(msgs.map(async msg => ({
-                    ...msg,
-                    username: (await groupRepo.getUser(msg.userId)).name
-                })));
-                setMessages(msgsWithUser);
-                groupRepo.listenMessages(async (message) => {
-                    const username = (await chatRepository.getUser(message.userId)).name
-                    setMessages((messages) => [ ...messages, { ...message, username } ]);
+    // useEffect(() => {
+    //     (async () => {
+    //         const routeParams = route.params || {};
+    //         console.log(routeParams)
+    //         if (routeParams.chat) {
+    //             return 
+    //         } else if (routeParams.group) {
+    //             const user = await User.Service.auth();
+    //             const groupRepo = Group.Repository.create(user, routeParams.group.id);
+    //             setUser(user);
+    //             setChatRepository(groupRepo);
+    //             const msgs = await groupRepo.loadMessages();
+    //             const msgsWithUser = await Promise.all(msgs.map(async msg => ({
+    //                 ...msg,
+    //                 username: (await groupRepo.getUser(msg.userId)).name
+    //             })));
+    //             setMessages(msgsWithUser);
+    //             groupRepo.listenMessages(async (message) => {
+    //                 const username = (await chatRepository.getUser(message.userId)).name
+    //                 setMessages((messages) => [ ...messages, { ...message, username } ]);
+    //             });
+    //             setLoading(false);
+    //         }
+    //     })();
+    // }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            let isActive = true;
+            (async () => {
+                setLoading(true);
+                const routeParams = route.params || {};
+                let chatName;
+                if (routeParams.chat) {
+                    const user = await User.Service.auth();
+                    const chatRepo = Chat.Repository.create(user, routeParams.chat.id);
+                    setUser(user);
+                    setChatRepository(chatRepo);
+                    const chat = await chatRepo._service.get(chatRepo.id);
+                    const otherUserId = chat.user1Id === user.id ? chat.user2Id : chat.user1Id;
+                    chatName = (await chatRepo.getUser(otherUserId)).name;
+                    const msgs = await chatRepo.loadMessages();
+                    const msgsWithUser = await Promise.all(msgs.map(async msg => ({
+                        ...msg,
+                        username: (await chatRepo.getUser(msg.userId)).name
+                    })));
+                    if (isActive) {
+                        setMessages(msgsWithUser);
+                        chatRepo.listenMessages(async (message) => {
+                            const username = (await chatRepo.getUser(message.userId)).name
+                            setMessages((messages) => [ ...messages, { ...message, username } ]);
+                        });
+                        setLoading(false);
+                    }
+                } else if (routeParams.group) {
+                    const user = await User.Service.auth();
+                    const groupRepo = Group.Repository.create(user, routeParams.group.id);
+                    setUser(user);
+                    setChatRepository(groupRepo);
+                    chatName = (await groupRepo._service.get(groupRepo.id)).name;
+                    const msgs = await groupRepo.loadMessages();
+                    const msgsWithUser = await Promise.all(msgs.map(async msg => ({
+                        ...msg,
+                        username: (await groupRepo.getUser(msg.userId)).name
+                    })));
+                    if (isActive) {
+                        setMessages(msgsWithUser);
+                        groupRepo.listenMessages(async (message) => {
+                            const username = (await groupRepo.getUser(message.userId)).name
+                            setMessages((messages) => [ ...messages, { ...message, username } ]);
+                        });
+                        setLoading(false);
+                    }
+                }
+                navigation.setOptions({
+                    title: chatName || 'Chat',
+                    // headerStyle: { backgroundColor: '#2e2e34' },
+                    // headerTintColor: '#fff',
+                    // headerTitleStyle: { fontWeight: 'bold' },
                 });
-                setLoading(false);
-            }
-        })();
-    }, []);
+            })();
+            return () => { isActive = false; };
+        }, [route.params])
+    );
+
+    useLayoutEffect(() => {
+        
+    }, [ navigation, route.params?.group, route.params?.chat ]);
 
     // useEffect(() => {
     //     (async () => {
@@ -160,7 +226,7 @@ export default function ChatScreen({ route }) {
                                     keyExtractor={item => item.id}
                                     contentContainerStyle={{ paddingBottom: 10 }}
                                     style={styles.flatList}
-                                    inverted 
+
                                 />
 
                                 <View style={styles.inputContainer}>

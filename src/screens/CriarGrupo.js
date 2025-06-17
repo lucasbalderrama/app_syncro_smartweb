@@ -1,26 +1,39 @@
 import React, { use, useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { supabase } from '../../supabaseConfig.js'; // Adjust the path as necessary
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import User from '../features/users.js';
+import Chat from '../features/chats.js';
 
-export default function CriarGrupo({ }) {
+export default function CriarGrupo({ navigation }) {
     const [users, setUsers] = useState([]);
     const [selected, setSelected] = useState([]);
     const [groupName, setGroupName] = useState('');
     const [currentUserId, setCurrentUserId] = useState(null);
+    const [userRepo, setUserRepo] = useState(User.Repository.create());
 
     const filteredUsers = users.filter(user => user.id !== currentUserId);
 
     useEffect(() => {
         async function fetchData() {
+            await userRepo.auth();
+            const relatedChats = await userRepo.getRelateds();
+            const ids = await Promise.all(relatedChats.map(async chatRaw => {
+                const chat = await Chat.Service.get(chatRaw.id);
+                const user = await userRepo.get(
+                    chat.user1Id === userRepo._authUser.id ? chat.user2Id : chat.user1Id
+                );
+                return user.id;
+            } ));
             const { data: userData, error: userError } = await supabase.auth.getUser();
             if (userData && userData.user) {
                 setCurrentUserId(userData.user.id);
             }
             const { data, error } = await supabase
                 .from('users')
-                .select('*');
+                .select('*')
+                .in("id", ids);
             if (!error) setUsers(data);
         }
         fetchData();
@@ -85,17 +98,18 @@ export default function CriarGrupo({ }) {
             .insert(membrosInserir);
 
         if (membrosError) {
-            alert('Erro ao adicionar membros: ' + membrosError.message);
+            Alert.alert('Erro ao adicionar membros: ' + membrosError.message);
         } else {
-            alert('Grupo criado com sucesso!');
+            Alert.alert('Grupo criado com sucesso!');
             setGroupName('');
             setSelected([]);
+            navigation.navigate("Conversas");
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Selecionar membros</Text>
+            <Text style={styles.title}>Selecionar contatos</Text>
             <ScrollView style={styles.scrollView}>
                 {users
                     .filter(user => user.id !== currentUserId)
