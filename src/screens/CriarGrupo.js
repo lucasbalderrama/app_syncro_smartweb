@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Image } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { supabase } from '../../supabaseConfig.js'; // Adjust the path as necessary
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -13,7 +13,39 @@ export default function CriarGrupo({ navigation }) {
     const [currentUserId, setCurrentUserId] = useState(null);
     const [userRepo, setUserRepo] = useState(User.Repository.create());
 
+    const [fotoAtual, setFotoAtual] = useState("");
+
     const filteredUsers = users.filter(user => user.id !== currentUserId);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const { data: authData, error: authError } = await supabase.auth.getUser();
+            const user = authData?.user;
+
+            if (authError || !user) {
+                console.error("Erro ao obter usuário:", authError);
+                Alert.alert("Erro", "Usuário não autenticado.");
+                return;
+            }
+
+            setNovoEmail(user.email);
+
+            const { data: userData, error: userError } = await supabase
+                .from("users")
+                .select("user_name, profile_img")
+                .eq("id", user.id)
+                .single();
+
+            if (userError) {
+                console.error("Erro ao carregar dados do usuário:", userError);
+            } else {
+                setNome(userData.user_name || "");
+                setFotoAtual(userData.profile_img || "");
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     useEffect(() => {
         async function fetchData() {
@@ -25,7 +57,7 @@ export default function CriarGrupo({ navigation }) {
                     chat.user1Id === userRepo._authUser.id ? chat.user2Id : chat.user1Id
                 );
                 return user.id;
-            } ));
+            }));
             const { data: userData, error: userError } = await supabase.auth.getUser();
             if (userData && userData.user) {
                 setCurrentUserId(userData.user.id);
@@ -130,9 +162,25 @@ export default function CriarGrupo({ navigation }) {
                                 borderBottomRightRadius: idx === filteredUsers.length - 1 ? 8 : 0,
                             }}
                         >
-                            <View>
-                                <Text style={styles.userName}>{user.user_name}</Text>
-                                <Text style={styles.userEmail}>{user.user_email}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                                {fotoAtual ? (
+                                    <Image
+                                        source={{ uri: fotoAtual }}
+                                        style={{ width: 40, height: 40, borderRadius: 60, marginRight: 10 }}
+                                    />
+                                ) : (
+                                    <View style={styles.foto}>
+                                        <Image
+                                            source={require("../assets/perfil.png")}
+                                            style={{ width: 40, height: 40, borderRadius: 60, marginRight: 10 }}
+                                        />
+                                    </View>
+                                )}
+                                <View>
+                                    <Text style={styles.userName}>{user.user_name}</Text>
+                                    <Text style={styles.userEmail}>{user.user_email}</Text>
+                                </View>
                             </View>
                             <RadioButton
                                 value={user.id}

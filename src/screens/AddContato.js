@@ -9,6 +9,7 @@ import {
     Modal,
     TextInput,
     SafeAreaView,
+    Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../supabaseConfig';
@@ -25,7 +26,39 @@ export default function AdicionarContato({ navigation }) {
     const [novoNome, setNovoNome] = useState('');
     const [novoEmail, setNovoEmail] = useState('');
 
+    const [fotoAtual, setFotoAtual] = useState("");
+
     const insets = useSafeAreaInsets(); // pega as áreas seguras
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const { data: authData, error: authError } = await supabase.auth.getUser();
+            const user = authData?.user;
+
+            if (authError || !user) {
+                console.error("Erro ao obter usuário:", authError);
+                Alert.alert("Erro", "Usuário não autenticado.");
+                return;
+            }
+
+            setNovoEmail(user.email);
+
+            const { data: userData, error: userError } = await supabase
+                .from("users")
+                .select("user_name, profile_img")
+                .eq("id", user.id)
+                .single();
+
+            if (userError) {
+                console.error("Erro ao carregar dados do usuário:", userError);
+            } else {
+                setNome(userData.user_name || "");
+                setFotoAtual(userData.profile_img || "");
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     useEffect(() => {
         // async function carregarDados() {
@@ -39,7 +72,7 @@ export default function AdicionarContato({ navigation }) {
         // }
 
         // carregarDados();
-        
+
         (async () => {
             const userRepo = User.Repository.create();
             setUserRepo(userRepo);
@@ -92,6 +125,19 @@ export default function AdicionarContato({ navigation }) {
                         navigation.navigate('Chat', { chat: usuario.chat });
                     }} key={usuario.id}>
                         <View key={usuario.id} style={styles.usuario}>
+                            {fotoAtual ? (
+                                <Image
+                                    source={{ uri: fotoAtual }}
+                                    style={{ width: 40, height: 40, borderRadius: 60, marginRight: 10 }}
+                                />
+                            ) : (
+                                <View style={styles.foto}>
+                                    <Image
+                                        source={require("../assets/perfil.png")}
+                                        style={{ width: 40, height: 40, borderRadius: 60, marginRight: 10 }}
+                                    />
+                                </View>
+                            )}
                             <View>
                                 <Text style={styles.nome}>{usuario.name}</Text>
                                 <Text style={styles.email}>{usuario.email}</Text>
@@ -144,7 +190,7 @@ export default function AdicionarContato({ navigation }) {
                                     Alert.alert('Erro', 'Usuário não encontrado.');
                                     return;
                                 }
-                                
+
                                 const myUser = userRepo._authUser;
                                 const { data, error } = await supabase.from("chats").insert({
                                     user1_id: myUser.id,
@@ -204,6 +250,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#444',
         paddingVertical: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     nome: {
         color: '#fff',
