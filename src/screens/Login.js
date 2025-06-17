@@ -6,12 +6,15 @@
     const Login = ({ navigation }) => {
         const [email, setEmail] = useState('');
         const [password, setPassword] = useState('');
+        const [loading, setLoading] = useState(false);
 
         const handleLogin = async () => {
+            setLoading(true);
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password
             });
+            setLoading(false);
 
             if (error) {
                 console.log('Erro ao fazer login:', error.message);
