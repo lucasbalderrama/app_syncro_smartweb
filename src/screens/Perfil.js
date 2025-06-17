@@ -162,7 +162,6 @@ const Perfil = ({ navigation }) => {
       }
 
       Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
-      navigation.goBack();
     } catch (error) {
       console.error("Erro ao atualizar perfil: ", error);
       Alert.alert("Erro", error.message || "Ocorreu um erro ao atualizar o perfil.");
