@@ -299,10 +299,10 @@ const styles = StyleSheet.create({
   botaoSalvar: {
     alignItems: 'center',
     marginTop: 30,
-    backgroundColor: 'rgb(83, 72, 207)',
+    backgroundColor: '#5e00d8',
     width: 180,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 6,
     padding: 7,
     marginLeft: 'auto',
     marginRight: 'auto',
