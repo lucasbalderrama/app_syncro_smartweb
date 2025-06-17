@@ -57,7 +57,7 @@ app_syncro_smartweb/
 
 ### - Instale as dependências:
 
-  > npm install ou yarn
+  > npm install ou yarn install
 
 ### - Configure o Supabase:
 
