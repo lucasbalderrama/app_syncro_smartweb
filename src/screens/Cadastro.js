@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     height: 38,
     width: 110,
     borderRadius: 7,
-    marginBottom: 20,
+
     marginTop: 20,
     backgroundColor: 'rgb(83, 72, 207)',
   },
@@ -143,11 +143,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Gotham',
   },
   textLogin: {
-    marginTop: 168,
+    marginTop: 148,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: 60,
+    height: 20,
   },
   linkLogin: {
     color: '#fff',
