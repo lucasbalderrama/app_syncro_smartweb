@@ -58,6 +58,21 @@ app_syncro_smartweb/
 ### - Instale as dependências:
 
   > npm install ou yarn install
+```
+npm install @react-navigation/native
+npm install @react-navigation/native-stack
+npm install @react-navigation/drawer
+npm install react-native-screens
+npm install react-native-safe-area-context
+npm install react-native-gesture-handler
+npm install react-native-reanimated
+npm install react-native-vector-icons
+npm install react-native-pager-view
+npm install @supabase/supabase-js
+npm install react-native-web
+npm install react-dom
+npm install react-native-web-safe-area-view
+```
 
 ### - Configure o Supabase:
 
