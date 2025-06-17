@@ -149,12 +149,12 @@ export default function AdicionarContato({ navigation }) {
                                 const { data, error } = await supabase.from("chats").insert({
                                     user1_id: myUser.id,
                                     user2_id: user.id,
-                                });
+                                }).select("*");
                                 if (error) {
-                                    console.log(error);
                                     Alert.alert('Erro', 'Não foi possível adicionar o contato.');
                                     return;
                                 } else {
+                                    console.log(data)
                                     const chat = await Chat.Service.get(data[0].id);
                                     const chatUser = {
                                         id: user.id,

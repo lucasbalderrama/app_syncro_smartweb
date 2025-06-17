@@ -83,7 +83,8 @@ const CadastroUsuario = ({ navigation }) => {
           value={password}
           onChangeText={setPassword}
           placeholderTextColor={'white'}
-        />+6
+        />
+        <Text style={styles.Text}>Sua senha deve conter uma letra maiúscula, uma minúscula e um caractere especial</Text>
 
         <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
           <Text style={styles.buttonText}>Cadastrar</Text>
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     height: 38,
     width: 110,
     borderRadius: 7,
-    marginBottom: 20,
+
     marginTop: 20,
     backgroundColor: 'rgb(83, 72, 207)',
   },
@@ -142,11 +143,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Gotham',
   },
   textLogin: {
-    marginTop: 168,
+    marginTop: 148,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: 60,
+    height: 20,
   },
   linkLogin: {
     color: '#fff',
@@ -158,6 +159,12 @@ const styles = StyleSheet.create({
     color: 'rgb(155, 100, 255)',
     fontFamily: 'Gotham',
     textDecorationLine: 'underline',
+  },
+  Text:{
+    color: "#fff",
+    margin: 12,
+    textAlign: "center",
+    fontFamily: "Gotham",
   }
 });
 

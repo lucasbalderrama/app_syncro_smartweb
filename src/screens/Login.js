@@ -105,7 +105,7 @@
             borderRadius: 7,
             marginBottom: 20,
             marginTop: 20,
-            backgroundColor: 'rgb(83, 72, 207)',
+            backgroundColor: '#5e00d8',
         },
         textoBotao: {
             color: 'white',
