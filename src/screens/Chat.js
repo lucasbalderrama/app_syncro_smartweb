@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     Alert
 } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import MessageBubble from '../component/mensagens';
 import { supabase } from '../../supabaseConfig.js';
@@ -239,7 +240,7 @@ export default function ChatScreen({ route, navigation }) {
                                         multiline 
                                     />
                                     <TouchableOpacity onPress={sendMessage} style={styles.registerButton}>
-                                        <Text style={styles.botao}>Enviar</Text>
+                                        <Text style={styles.botao}><MaterialIcons name="arrow-forward" size={20} color="#fff" /></Text>
                                     </TouchableOpacity>
                                 </View>
                             </>

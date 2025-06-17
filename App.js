@@ -25,7 +25,7 @@ export default function App() {
           screenOptions={{
             drawerContentStyle: { backgroundColor: 'rgb(30,30,36)' },
             drawerInactiveTintColor: '#aaa',
-            drawerActiveTintColor: 'rgb(76, 0, 216)',
+            drawerActiveTintColor: 'rgb(125, 116, 255)',
             headerStyle: { backgroundColor: 'rgb(19, 19, 24)' },
             headerTintColor: '#fff',
           }}>

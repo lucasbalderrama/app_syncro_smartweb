@@ -138,7 +138,7 @@ export default function CriarGrupo({ navigation }) {
                                 value={user.id}
                                 status={selected.includes(user.id) ? 'checked' : 'unchecked'}
                                 onPress={() => toggleSelect(user.id)}
-                                color="#5e00d8"
+                                color="rgb(112, 61, 241)"
                             />
                         </TouchableOpacity>
                     ))}
